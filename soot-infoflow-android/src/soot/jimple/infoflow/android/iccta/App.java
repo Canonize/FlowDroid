@@ -103,10 +103,21 @@ public class App {
 
 	public Set<Intent> getIntents() {
 		Set<Intent> intents = new HashSet<Intent>();
-		for (LoggingPoint p : getLoggingPoints())
+		for (LoggingPoint p : getLoggingPoints()){
+			//+++++
+			// System.out.println("==================");
+			// System.out.println(p.dump());
 			intents.addAll(p.getIntents());
+		}
+		// System.out.println("getIntents finished.\n\n\n");
 		return intents;
 	}
+	// public List<Intent> getIntents() {
+	// 	List<Intent> intents = new <Intent>();
+	// 	for (LoggingPoint p : getLoggingPoints())
+	// 		intents.addAll(p.getIntents());
+	// 	return intents;
+	// }
 
 	public void setComponentList(List<Component> componentsList) {
 		for (Component c : componentsList)
@@ -227,6 +238,22 @@ class LoggingPoint {
 		return String.valueOf(id);
 	}
 
+	//+++++
+	public String dump() {
+		StringBuilder pointString = new StringBuilder();
+		pointString.append("[");
+		pointString.append(this.callerMethodSignature).append("/").append(this.calleeMethodSignature).append(",");
+		pointString.append("id:").append(this.stmtSequence);
+		pointString.append("]");
+		return pointString.toString();
+		// System.out.println("----------------------------");
+		// System.out.println(this.callerMethodSignature + "/" + this.calleeMethodSignature);
+		// System.out.println(" id :"+this.stmtSequence);
+		// for (Intent intent : this.getIntents()) {
+			// System.out.println("  " + "Component: " + intent.getComponent());
+		
+	}
+
 	public boolean equalsSimilar(LoggingPoint pointDest) {
 		String shortenedA = getCalleeMethodSignature().substring(getCalleeMethodSignature().indexOf(":"));
 		String shortenedB = pointDest.getCalleeMethodSignature()
@@ -331,6 +358,32 @@ class Intent {
 		return intent;
 	}
 
+	// @Override
+	// public String toString() {
+	// 	return "Intent [component="
+	// 			+ component
+	// 			+ ", componentPackage="
+	// 			+ componentPackage
+	// 			+ ", componentClass="
+	// 			+ componentClass
+	// 			+ ", action="
+	// 			+ action
+	// 			+ ", categories="
+	// 			+ categories
+	// 			/* + ", extras=" + extras */
+	// 			+ ", dataScheme="
+	// 			+ dataScheme
+	// 			+ ", dataHost="
+	// 			+ dataHost
+	// 			+ ", dataPort="
+	// 			+ dataPort
+	// 			+ ", dataPath="
+	// 			+ dataPath
+	// 			+ ", data="
+	// 			+ data
+	// 			+ "]";
+	// }
+
 	@Override
 	public String toString() {
 		return "Intent [component="
@@ -354,6 +407,8 @@ class Intent {
 				+ dataPath
 				+ ", data="
 				+ data
+				+", LoggingPoint="
+				+point.dump()
 				+ "]";
 	}
 

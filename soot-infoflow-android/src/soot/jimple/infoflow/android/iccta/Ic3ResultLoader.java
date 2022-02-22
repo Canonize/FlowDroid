@@ -44,7 +44,16 @@ public class Ic3ResultLoader {
 		result.setComponentList(application.getComponentsList());
 
 		for (Application.Component component : application.getComponentsList()) {
+			//+++++
+				// System.out.println("===========component : "+ component.toString());
+				// int i =0;
 			for (ExitPoint exitPoint : component.getExitPointsList()) {
+				//+++++
+				// i++;
+				// System.out.println(i +" ========exitPoint========");
+				// System.out.println(exitPoint.toString());
+				// System.out.println("=============================");
+
 				LoggingPoint loggingPoint = new LoggingPoint(result);
 				Instruction instruction = exitPoint.getInstruction();
 				loggingPoint.setCallerMethodSignature(instruction.getMethod());
@@ -55,8 +64,12 @@ public class Ic3ResultLoader {
 				loggingPoint.setCalleeMethodSignature(stmt.substring(startPos, endPos + 1));
 				Set<Intent> intents = new HashSet<Intent>();
 				loggingPoint.setIntents(intents);
-
+				int j =0 ; 
 				for (ExitPoint.Intent intent : exitPoint.getIntentsList()) {
+					//+++++
+					// System.out.println(j +" ========intent========");
+					// System.out.println(intent.toString());
+					// System.out.println("=============================");
 					Intent destinationIntent = new Intent(result, loggingPoint);
 
 					String componentPackage = null;

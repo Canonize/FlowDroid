@@ -417,6 +417,8 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 			if (sc != null)
 				this.entrypoints.add(sc);
 		}
+		//+++++
+		printEntrypoints();
 	}
 
 	/**
@@ -729,21 +731,31 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 						break;
 					}
 				}
-
-				if (numPrevEdges < Scene.v().getCallGraph().size())
+				//+++++
+				System.out.println("0");
+				//Scene.v().getCallGraph().size()返回CG边数，这里应该是判断是否遍历完全
+				if (numPrevEdges < Scene.v().getCallGraph().size()){
+					//+++++
+					System.out.println("1");
 					hasChanged = true;
-
+				}
 				// Collect the results of the soot-based phases
-				if (this.callbackMethods.putAll(jimpleClass.getCallbackMethods()))
+				if (this.callbackMethods.putAll(jimpleClass.getCallbackMethods())){
+				//+++++
+				System.out.println("2");
 					hasChanged = true;
-
-				if (entrypoints.addAll(jimpleClass.getDynamicManifestComponents()))
+				}
+				if (entrypoints.addAll(jimpleClass.getDynamicManifestComponents())){
+					//+++++
+					System.out.println("3");
 					hasChanged = true;
-
+				}
 				// Collect the XML-based callback methods
-				if (collectXmlBasedCallbackMethods(lfp, jimpleClass))
+				if (collectXmlBasedCallbackMethods(lfp, jimpleClass)){
+					//+++++
+					System.out.println("4");
 					hasChanged = true;
-
+				}
 				// Avoid callback overruns. If we are beyond the callback limit
 				// for one entry point, we may not collect any further callbacks
 				// for that entry point.
@@ -1145,14 +1157,18 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 
 		// Clean up any old Soot instance we may have
 		G.reset();
-
+		//+++++
+		//不加载未被包含的类
 		Options.v().set_no_bodies_for_excluded(true);
+		//加载未被解析的类
 		Options.v().set_allow_phantom_refs(true);
 		if (config.getWriteOutputFiles())
 			Options.v().set_output_format(Options.output_format_jimple);
 		else
 			Options.v().set_output_format(Options.output_format_none);
+		//全局模式
 		Options.v().set_whole_program(true);
+		//
 		Options.v().set_process_dir(Collections.singletonList(apkFileLocation));
 		if (forceAndroidJar)
 			Options.v().set_force_android_jar(androidJar);
@@ -1332,6 +1348,8 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * you want to run a data flow analysis, do not call this method. Instead, call
 	 * runInfoflow() directly, which will take care all necessary prerequisites.
 	 */
+	//+++++
+	//只构造call graph 而不进行数据流分析
 	public void constructCallgraph() {
 		boolean oldRunAnalysis = config.isTaintAnalysisEnabled();
 		try {
@@ -1457,6 +1475,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * @param sourcesAndSinks The sources and sinks of the data flow analysis
 	 * @return The results of the data flow analysis
 	 */
+	//*
 	public InfoflowResults runInfoflow(ISourceSinkDefinitionProvider sourcesAndSinks) {
 		// Reset our object state
 		this.collectedSources = config.getLogSourcesAndSinks() ? new HashSet<Stmt>() : null;
@@ -1478,11 +1497,23 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 
 		// Perform basic app parsing
 		try {
+			//解析manifest,并4大组件作为entrypoint
 			parseAppResources();
 		} catch (IOException | XmlPullParserException e) {
 			logger.error("Parse app resource failed", e);
 			throw new RuntimeException("Parse app resource failed", e);
 		}
+		//+++++
+		//在这里改entrypoint
+		this.entrypoints = new HashSet<>();
+		this.entrypoints.add(Scene.v().getSootClassUnsafe("com.ctid.open.activity.LoginActivity"));
+		// this.entrypoints.add(Scene.v().getSootClassUnsafe("cn.hsa.app.login.ui.LoginActivity"));
+		// this.entrypoints.add(Scene.v().getSootClassUnsafe("com.alibaba.zjzwfw.account.ZWLoginActivityV3"));
+		// for (String className : entryPoints) {
+		// 	SootClass sc = Scene.v().getSootClassUnsafe(className);
+		// 	if (sc != null)
+		// 		this.entrypoints.add(sc);
+		// } 
 
 		MultiRunResultAggregator resultAggregator = new MultiRunResultAggregator();
 
@@ -1495,6 +1526,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		// In one-component-at-a-time, we do not have a single entry point
 		// creator. For every entry point, run the data flow analysis.
 		if (config.getOneComponentAtATime()) {
+			//entrypointWorklist初始化
 			List<SootClass> entrypointWorklist = new ArrayList<>(entrypoints);
 			while (!entrypointWorklist.isEmpty()) {
 				SootClass entrypoint = entrypointWorklist.remove(0);

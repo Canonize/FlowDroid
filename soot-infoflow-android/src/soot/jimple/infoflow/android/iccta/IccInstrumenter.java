@@ -68,11 +68,17 @@ public class IccInstrumenter implements PreAnalysisHandler {
 			redirectionCreator.undoInstrumentation();
 
 		logger.info("[IccTA] Lauching ICC Redirection Creation...");
+		//+++++
+		int cnt =1;
 		for (IccLink link : iccLinks) {
 			if (link.fromU == null) {
 				continue;
 			}
+			//+++++
+			System.out.println(cnt+" : "+link.toString());
 			redirectionCreator.redirectToDestination(link);
+			System.out.println("\n");
+			cnt++;
 		}
 
 		// Remove any potential leftovers from the last last instrumentation

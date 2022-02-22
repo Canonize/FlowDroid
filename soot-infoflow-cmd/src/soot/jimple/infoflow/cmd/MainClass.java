@@ -361,7 +361,9 @@ public class MainClass {
 					injectStubDroidHierarchy((SummaryTaintWrapper) taintWrapper);
 
 				// Start the data flow analysis
-				analyzer.runInfoflow();
+				//+++++
+				//analyzer.runInfoflow();
+				analyzer.constructCallgraph();
 
 				if (reportMissingSummaryWrapper != null) {
 					String file = cmd.getOptionValue(OPTION_MISSING_SUMMARIES_FILE);

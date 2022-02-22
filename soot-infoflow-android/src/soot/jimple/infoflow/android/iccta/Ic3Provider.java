@@ -36,7 +36,21 @@ public class Ic3Provider implements IccLinkProvider {
 		}
 
 		Set<Intent> intents = app.getIntents();
+		// List<Intent> intents = app.getIntents();
+		// //+++++
+		// System.out.println("=============app============");
+		// app.dump();
+		// System.out.println("==========\n");
+		// System.out.println("intents size : " + intents.size()+"\n");
+		int i=0;
 		for (Intent intent : intents) {
+			//+++++
+			i++;
+			// System.out.println(i+" intent : "+intent.toString());
+			// System.out.println("----------------------------");
+			// System.out.println(intent.getLoggingPoint().dump());
+			// System.out.println("\n");
+
 			if (intent.isImplicit()) {
 				if (null == intent.getAction()) {
 					continue;
@@ -58,13 +72,20 @@ public class Ic3Provider implements IccLinkProvider {
 			} else {
 				String targetCompName = intent.getComponentClass();
 				if (!availableTargetedComponent(intent.getApp(), targetCompName)) {
+					//+++++
+					System.out.println("can not found targetCompName : "+targetCompName+"\n");
 					continue;
 				}
 
 				SootMethod fromSM = Scene.v().grabMethod(intent.getLoggingPoint().getCallerMethodSignature());
+				//+++++
+				// System.out.println("fromSM : "+fromSM.toString());
+
 				if (fromSM != null) {
 					Stmt fromU = linkWithTarget(fromSM, intent.getLoggingPoint().getStmtSequence());
 					IccLink iccLink = new IccLink(fromSM, fromU, Scene.v().getSootClassUnsafe(targetCompName));
+					//+++++
+					// System.out.println(iccLink.toString()+"\n\n");
 
 					for (Component comp : intent.getApp().getComponentList()) {
 						if (comp.getName().equals(targetCompName)) {
@@ -76,6 +97,8 @@ public class Ic3Provider implements IccLinkProvider {
 				}
 			}
 		}
+		//+++++
+		System.out.println("iccbot-intent count : "+i);
 		return iccLinks;
 	}
 
@@ -87,7 +110,10 @@ public class Ic3Provider implements IccLinkProvider {
 			Stmt stmt = (Stmt) iter.next();
 
 			if (i == stmtIdx) {
-				return stmt;
+			//+++++
+			// System.out.println(stmtIdx+ " : "+ stmt+"\n");
+
+			return stmt;
 			}
 			i++;
 		}

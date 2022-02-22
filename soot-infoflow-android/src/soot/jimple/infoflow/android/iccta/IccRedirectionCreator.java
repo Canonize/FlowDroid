@@ -454,7 +454,22 @@ public class IccRedirectionCreator {
 
 		copyTags(link.getFromU(), redirectCallU);
 		redirectCallU.addTag(SimulatedCodeElementTag.TAG);
-		units.insertAfter(redirectCallU, link.getFromU());
+		//+++++
+		try {
+			units.insertAfter(redirectCallU, link.getFromU());
+		} catch (Exception e) {
+			System.out.println("Insertion point not found in chain");
+			System.out.println("----------------------------------");
+			System.out.println(link.toString());
+			// int j =0;
+			// for (Iterator<Unit> iter = body.getUnits().snapshotIterator(); iter.hasNext();){
+			// Stmt stmt = (Stmt) iter.next();
+			// System.out.println(j+" : "+stmt+"\n");
+			// j++;
+			// }
+			// System.out.println("\n\n");
+		}
+		// units.insertAfter(redirectCallU, link.getFromU());
 		instrumentedUnits.put(body, redirectCallU);
 		if (instrumentationCallback != null) {
 			instrumentationCallback.onRedirectorCallInserted(link, redirectCallU, redirectMethod);
