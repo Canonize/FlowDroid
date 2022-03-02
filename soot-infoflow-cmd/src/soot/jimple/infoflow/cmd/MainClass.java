@@ -830,6 +830,8 @@ public class MainClass {
 			config.setOneSourceAtATime(true);
 		if (cmd.hasOption(OPTION_ONE_COMPONENT))
 			config.setOneComponentAtATime(true);
+			//+++++
+			// config.setOneComponentAtATime(true);
 		if (cmd.hasOption(OPTION_SEQUENTIAL_PATHS))
 			config.getPathConfiguration().setSequentialPathProcessing(true);
 		if (cmd.hasOption(OPTION_LOG_SOURCES_SINKS))

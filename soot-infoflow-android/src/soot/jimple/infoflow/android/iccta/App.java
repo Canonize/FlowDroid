@@ -245,15 +245,10 @@ class LoggingPoint {
 		pointString.append(this.callerMethodSignature).append("/").append(this.calleeMethodSignature).append(",");
 		pointString.append("id:").append(this.stmtSequence);
 		pointString.append("]");
-		return pointString.toString();
-		// System.out.println("----------------------------");
-		// System.out.println(this.callerMethodSignature + "/" + this.calleeMethodSignature);
-		// System.out.println(" id :"+this.stmtSequence);
-		// for (Intent intent : this.getIntents()) {
-			// System.out.println("  " + "Component: " + intent.getComponent());
-		
+		return pointString.toString();	
 	}
 
+	
 	public boolean equalsSimilar(LoggingPoint pointDest) {
 		String shortenedA = getCalleeMethodSignature().substring(getCalleeMethodSignature().indexOf(":"));
 		String shortenedB = pointDest.getCalleeMethodSignature()

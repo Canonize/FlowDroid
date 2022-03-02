@@ -1507,8 +1507,10 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		//在这里改entrypoint
 		this.entrypoints = new HashSet<>();
 		this.entrypoints.add(Scene.v().getSootClassUnsafe("com.ctid.open.activity.LoginActivity"));
+		// this.entrypoints.add(Scene.v().getSootClassUnsafe("com.ctid.open.activity.RegistActivity"));
 		// this.entrypoints.add(Scene.v().getSootClassUnsafe("cn.hsa.app.login.ui.LoginActivity"));
 		// this.entrypoints.add(Scene.v().getSootClassUnsafe("com.alibaba.zjzwfw.account.ZWLoginActivityV3"));
+		// this.entrypoints.add(Scene.v().getSootClassUnsafe("com.ccb.fintech.app.productions.hnga.ui.user.login.LoginActivity"));
 		// for (String className : entryPoints) {
 		// 	SootClass sc = Scene.v().getSootClassUnsafe(className);
 		// 	if (sc != null)
@@ -1807,8 +1809,9 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		if (component == null)
 			return this.entrypoints;
 		else {
-			// We always analyze the application class together with each
-			// component as there might be interactions between the two
+			// W always analyze the application class together with eache
+			// component
+			// as there might be interactions between the two
 			Set<SootClass> components = new HashSet<>(2);
 			components.add(component);
 

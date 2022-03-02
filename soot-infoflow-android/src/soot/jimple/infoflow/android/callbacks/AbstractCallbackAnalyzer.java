@@ -815,16 +815,26 @@ public abstract class AbstractCallbackAnalyzer {
 		// methods.
 		// We model this as follows: Whenever the user overwrites a method in an
 		// Android OS class, we treat it as a potential callback.
+		//收集所有父类中的方法
 		Map<String, SootMethod> systemMethods = new HashMap<>(10000);
 		for (SootClass parentClass : Scene.v().getActiveHierarchy().getSuperclassesOf(sootClass)) {
-			if (SystemClassHandler.v().isClassInSystemPackage(parentClass.getName()))
-				for (SootMethod sm : parentClass.getMethods())
+			for (SootMethod sm : parentClass.getMethods())
 					if (!sm.isConstructor())
 						systemMethods.put(sm.getSubSignature(), sm);
+			// //+++++
+			// System.out.println("parentClass: "+parentClass);
+			// if (SystemClassHandler.v().isClassInSystemPackage(parentClass.getName())){
+			// 	//+++++
+			// 	System.out.println("isClassInSystemPackage: "+ parentClass);
+			// 	for (SootMethod sm : parentClass.getMethods())
+			// 		if (!sm.isConstructor())
+			// 			systemMethods.put(sm.getSubSignature(), sm);
+			// }
 		}
 
 		// Iterate over all user-implemented methods. If they are inherited
 		// from a system class, they are callback candidates.
+		//遍历，如果某方法重载父类中方法且不是来自系统类，则视为回调
 		for (SootClass parentClass : Scene.v().getActiveHierarchy().getSuperclassesOfIncluding(sootClass)) {
 			if (SystemClassHandler.v().isClassInSystemPackage(parentClass.getName()))
 				continue;
@@ -857,8 +867,9 @@ public abstract class AbstractCallbackAnalyzer {
 			SootClass lifecycleElement) {
 		// We cannot create instances of abstract classes anyway, so there is no
 		// reason to look for interface implementations
-		if (!baseClass.isConcrete())
+		if (!baseClass.isConcrete()){
 			return;
+		}
 
 		// Do not analyze system classes
 		if (SystemClassHandler.v().isClassInSystemPackage(baseClass.getName()))
@@ -936,22 +947,39 @@ public abstract class AbstractCallbackAnalyzer {
 	protected boolean checkAndAddMethod(SootMethod method, SootMethod parentMethod, SootClass lifecycleClass,
 			CallbackType callbackType) {
 		// Do not call system methods
-		if (SystemClassHandler.v().isClassInSystemPackage(method.getDeclaringClass().getName()))
+		if (SystemClassHandler.v().isClassInSystemPackage(method.getDeclaringClass().getName())){
+		//+++++
+		// System.out.println("Do not call system methods");
+
 			return false;
+		}
 
 		// Skip empty methods
-		if (method.isConcrete() && isEmpty(method.retrieveActiveBody()))
-			return false;
+		if (method.isConcrete() && isEmpty(method.retrieveActiveBody())){
+		//+++++
+		// System.out.println("Skip empty methods");
 
+			return false;
+		}
 		// Skip constructors
-		if (method.isConstructor() || method.isStaticInitializer())
-			return false;
+		if (method.isConstructor() || method.isStaticInitializer()){
+		//+++++
+		// System.out.println("Skip constructors");
 
+			return false;
+		}
 		// Check the filters
-		if (!filterAccepts(lifecycleClass, method.getDeclaringClass()))
+		if (!filterAccepts(lifecycleClass, method.getDeclaringClass())){
+		//+++++
+		// System.out.println("Skip filters");
+
 			return false;
-		if (!filterAccepts(lifecycleClass, method))
+		}
+		if (!filterAccepts(lifecycleClass, method)){
+		//+++++
+		// System.out.println("Skip filters");
 			return false;
+		}
 
 		return this.callbackMethods.put(lifecycleClass,
 				new AndroidCallbackDefinition(method, parentMethod, callbackType));

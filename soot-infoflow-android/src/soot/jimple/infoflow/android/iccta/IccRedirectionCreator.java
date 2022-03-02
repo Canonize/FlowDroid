@@ -91,17 +91,28 @@ public class IccRedirectionCreator {
 	}
 
 	public void redirectToDestination(IccLink link) {
-		if (link.getDestinationC().isPhantom())
+		if (link.getDestinationC().isPhantom()){
+			//+++++
+			// System.out.println("isPhantom: "+link.toString());
+
 			return;
+		}	
 
 		// Do not instrument code into system methods
-		if (SystemClassHandler.v().isClassInSystemPackage(link.getFromSM().getDeclaringClass().getName()))
-			return;
+		if (SystemClassHandler.v().isClassInSystemPackage(link.getFromSM().getDeclaringClass().getName())){
+			//+++++
+			// System.out.println("not instrument code: "+link.toString());
 
+			return;
+		}
 		// 1) generate redirect method
 		SootMethod redirectSM = getRedirectMethod(link);
-		if (redirectSM == null)
+		if (redirectSM == null){
+			// +++++
+			System.out.println("no redirectSM "+link.toString());
+
 			return;
+		}
 
 		// 2) instrument the source to call the generated redirect method after
 		// ICC methods
@@ -119,8 +130,15 @@ public class IccRedirectionCreator {
 		// have an
 		// entry point for it
 		SootClass instrumentedDestinationSC = link.getDestinationC();
-		if (!componentToEntryPoint.hasEntryPointForComponent(instrumentedDestinationSC))
+		//+++++
+		System.out.println("DectinationC: "+instrumentedDestinationSC);
+
+		if (!componentToEntryPoint.hasEntryPointForComponent(instrumentedDestinationSC)){
+			//+++++
+			System.out.println("wrong target compoent");
+
 			return null;
+			}
 
 		// Get the redirection method and create it if it doesn't exist
 		SootMethod redirectMethod = source2RedirectMethod.get(link.toString());
@@ -154,8 +172,11 @@ public class IccRedirectionCreator {
 					}
 				} else {
 					redirectMethod = generateRedirectMethod(instrumentedDestinationSC);
-					if (redirectMethod == null)
+					if (redirectMethod == null){
+					//+++++
+					System.out.println("redirectMethod  null");
 						return null;
+					}
 				}
 			}
 
@@ -454,7 +475,7 @@ public class IccRedirectionCreator {
 
 		copyTags(link.getFromU(), redirectCallU);
 		redirectCallU.addTag(SimulatedCodeElementTag.TAG);
-		//+++++
+		//+++++ 异常处理
 		try {
 			units.insertAfter(redirectCallU, link.getFromU());
 		} catch (Exception e) {
