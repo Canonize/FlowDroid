@@ -38,9 +38,11 @@ import soot.jimple.infoflow.android.data.AndroidMethod;
 import soot.jimple.infoflow.android.data.parsers.PermissionMethodParser;
 import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointCreator;
 import soot.jimple.infoflow.android.entryPointCreators.components.ComponentEntryPointCollection;
+import soot.jimple.infoflow.android.iccta.Ic3Provider;
 import soot.jimple.infoflow.android.iccta.IccInstrumenter;
 import soot.jimple.infoflow.android.manifest.IAndroidApplication;
 import soot.jimple.infoflow.android.manifest.IManifestHandler;
+import soot.jimple.infoflow.android.iccta.IccLink;
 import soot.jimple.infoflow.android.manifest.ProcessManifest;
 import soot.jimple.infoflow.android.resources.ARSCFileParser;
 import soot.jimple.infoflow.android.resources.ARSCFileParser.AbstractResource;
@@ -1515,7 +1517,33 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		// 	SootClass sc = Scene.v().getSootClassUnsafe(className);
 		// 	if (sc != null)
 		// 		this.entrypoints.add(sc);
-		// } 
+		// }
+
+		//+++++
+		//如果以有ICC状态运行Flowdroid
+		if ( config.getIccConfig().isIccEnabled() ) {
+			//收集IccModel中的IccLinks
+			Ic3Provider provider = new Ic3Provider(config.getIccConfig().getIccModel());
+			List<IccLink> iccLinks = provider.getIccLinks();
+			
+			//不断遍历IccLinks，将与入口点相关组件加进entrypoints
+			boolean epHasChanged = true;
+
+			while (epHasChanged) {
+
+				epHasChanged = false;
+
+				for ( IccLink link : iccLinks ) {
+					SootClass SourceC = link.getFromSM().getDeclaringClass();
+					//若当前entrypoints中存在该IccLink的起点，则将终点也加入
+					//若终点是新加入的，则说明这一轮遍历epHasChanged
+					if ( this.entrypoints.contains(SourceC) && this.entrypoints.add(link.getDestinationC()) )
+						epHasChanged = true;
+				}
+
+			}
+		}
+		
 
 		MultiRunResultAggregator resultAggregator = new MultiRunResultAggregator();
 
