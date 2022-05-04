@@ -818,7 +818,8 @@ public abstract class AbstractCallbackAnalyzer {
 		//收集所有父类中的方法
 		Map<String, SootMethod> systemMethods = new HashMap<>(10000);
 		for (SootClass parentClass : Scene.v().getActiveHierarchy().getSuperclassesOf(sootClass)) {
-			for (SootMethod sm : parentClass.getMethods())
+			if (SystemClassHandler.v().isClassInSystemPackage(parentClass.getName()))
+				for (SootMethod sm : parentClass.getMethods())
 					if (!sm.isConstructor())
 						systemMethods.put(sm.getSubSignature(), sm);
 			// //+++++

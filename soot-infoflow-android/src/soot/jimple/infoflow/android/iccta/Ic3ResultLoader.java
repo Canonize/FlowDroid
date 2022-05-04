@@ -58,6 +58,8 @@ public class Ic3ResultLoader {
 				Instruction instruction = exitPoint.getInstruction();
 				loggingPoint.setCallerMethodSignature(instruction.getMethod());
 				loggingPoint.setStmtSequence(instruction.getId());
+				//+++
+				loggingPoint.setSourceClass(instruction.getClassName());
 				String stmt = instruction.getStatement();
 				int startPos = stmt.indexOf("<");
 				int endPos = stmt.lastIndexOf(">");

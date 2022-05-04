@@ -9,16 +9,21 @@ public class IccLink {
 	protected final SootMethod fromSM;
 	protected final Unit fromU;
 	protected final SootClass destinationC;
+	//+++
+	protected final SootClass sourceC;
 	protected String exit_kind;
 
-	public IccLink(SootMethod fromSm, Unit fromU, SootClass destinationC) {
+	public IccLink(SootMethod fromSm, Unit fromU, SootClass destinationC, SootClass sourceC) {
 		this.fromSM = fromSm;
 		this.fromU = fromU;
 		this.destinationC = destinationC;
+		//+++
+		this.sourceC = sourceC;
 	}
 
 	@Override
 	public String toString() {
+		//+++
 		return fromSM + " [" + fromU + "] " + destinationC;
 	}
 
@@ -42,11 +47,18 @@ public class IccLink {
 		return destinationC;
 	}
 
+	//+++
+	public SootClass getSourceC() {
+		return sourceC;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((destinationC == null) ? 0 : destinationC.hashCode());
+		//+++
+		result = prime * result + ((sourceC == null) ? 0 : sourceC.hashCode());
 		result = prime * result + ((exit_kind == null) ? 0 : exit_kind.hashCode());
 		result = prime * result + ((fromSM == null) ? 0 : fromSM.hashCode());
 		result = prime * result + ((fromU == null) ? 0 : fromU.hashCode());
@@ -67,6 +79,13 @@ public class IccLink {
 				return false;
 		} else if (!destinationC.equals(other.destinationC))
 			return false;
+		//+++
+		if (sourceC == null) {
+			if (other.sourceC != null)
+				return false;
+		} else if (!sourceC.equals(other.sourceC))
+			return false;	
+
 		if (exit_kind == null) {
 			if (other.exit_kind != null)
 				return false;

@@ -82,6 +82,8 @@ import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
 import soot.jimple.infoflow.taintWrappers.ITaintWrapperDataFlowAnalysis;
 import soot.jimple.infoflow.util.SystemClassHandler;
 import soot.jimple.infoflow.values.IValueProvider;
+import soot.jimple.toolkits.callgraph.CallGraph;
+import soot.jimple.toolkits.callgraph.Edge;
 import soot.options.Options;
 import soot.util.HashMultiMap;
 import soot.util.MultiMap;
@@ -695,8 +697,15 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 				createMainMethod(component);
 
 				int numPrevEdges = 0;
+				CallGraph prevcg = new CallGraph();
+
 				if (Scene.v().hasCallGraph()) {
 					numPrevEdges = Scene.v().getCallGraph().size();
+					//+++
+
+					for (Edge edge : Scene.v().getCallGraph()) {
+						prevcg.addEdge(edge);
+					}
 				}
 				// Since the generation of the main method can take some time,
 				// we check again whether we need to stop.
@@ -737,14 +746,14 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 				System.out.println("0");
 				//Scene.v().getCallGraph().size()返回CG边数，这里应该是判断是否遍历完全
 				if (numPrevEdges < Scene.v().getCallGraph().size()){
-					//+++++
+					//+++
 					System.out.println("1");
 					hasChanged = true;
 				}
 				// Collect the results of the soot-based phases
 				if (this.callbackMethods.putAll(jimpleClass.getCallbackMethods())){
 				//+++++
-				System.out.println("2");
+					System.out.println("2");
 					hasChanged = true;
 				}
 				if (entrypoints.addAll(jimpleClass.getDynamicManifestComponents())){
@@ -765,6 +774,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 					for (Iterator<SootClass> componentIt = this.callbackMethods.keySet().iterator(); componentIt
 							.hasNext();) {
 						SootClass callbackComponent = componentIt.next();
+						
 						if (this.callbackMethods.get(callbackComponent).size() > callbackConfig
 								.getMaxCallbacksPerComponent()) {
 							componentIt.remove();
@@ -1112,9 +1122,12 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		entryPointCreator = createEntryPointCreator(component);
 		SootMethod dummyMainMethod = entryPointCreator.createDummyMain();
 		Scene.v().setEntryPoints(Collections.singletonList(dummyMainMethod));
-		if (!dummyMainMethod.getDeclaringClass().isInScene())
-			Scene.v().addClass(dummyMainMethod.getDeclaringClass());
 
+		if (!dummyMainMethod.getDeclaringClass().isInScene()) {
+			System.out.println(dummyMainMethod.getDeclaringClass().getName());
+			Scene.v().addClass(dummyMainMethod.getDeclaringClass());
+		}
+			
 		// addClass() declares the given class as a library class. We need to
 		// fix this.
 		dummyMainMethod.getDeclaringClass().setApplicationClass();
@@ -1507,42 +1520,37 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		}
 		//+++++
 		//在这里改entrypoint
-		this.entrypoints = new HashSet<>();
-		this.entrypoints.add(Scene.v().getSootClassUnsafe("com.ctid.open.activity.LoginActivity"));
-		// this.entrypoints.add(Scene.v().getSootClassUnsafe("com.ctid.open.activity.RegistActivity"));
-		// this.entrypoints.add(Scene.v().getSootClassUnsafe("cn.hsa.app.login.ui.LoginActivity"));
-		// this.entrypoints.add(Scene.v().getSootClassUnsafe("com.alibaba.zjzwfw.account.ZWLoginActivityV3"));
-		// this.entrypoints.add(Scene.v().getSootClassUnsafe("com.ccb.fintech.app.productions.hnga.ui.user.login.LoginActivity"));
-		// for (String className : entryPoints) {
-		// 	SootClass sc = Scene.v().getSootClassUnsafe(className);
-		// 	if (sc != null)
-		// 		this.entrypoints.add(sc);
-		// }
+		if(!config.getTargetClass().isEmpty()) {
+			this.entrypoints = new HashSet<>();
+			this.entrypoints.add(Scene.v().getSootClassUnsafe(config.getTargetClass()));
 
-		//+++++
-		//如果以有ICC状态运行Flowdroid
-		if ( config.getIccConfig().isIccEnabled() ) {
-			//收集IccModel中的IccLinks
-			Ic3Provider provider = new Ic3Provider(config.getIccConfig().getIccModel());
-			List<IccLink> iccLinks = provider.getIccLinks();
-			
-			//不断遍历IccLinks，将与入口点相关组件加进entrypoints
-			boolean epHasChanged = true;
+			//+++++
+			//如果以有ICC状态运行Flowdroid
+			if ( config.getIccConfig().isIccEnabled() ) {
+				//收集IccModel中的IccLinks
+				Ic3Provider provider = new Ic3Provider(config.getIccConfig().getIccModel());
+				List<IccLink> iccLinks = provider.getIccLinks();
+				
+				//不断遍历IccLinks，将与入口点相关组件加进entrypoints
+				boolean epHasChanged = true;
 
-			while (epHasChanged) {
+				while (epHasChanged) {
 
-				epHasChanged = false;
+					epHasChanged = false;
 
-				for ( IccLink link : iccLinks ) {
-					SootClass SourceC = link.getFromSM().getDeclaringClass();
-					//若当前entrypoints中存在该IccLink的起点，则将终点也加入
-					//若终点是新加入的，则说明这一轮遍历epHasChanged
-					if ( this.entrypoints.contains(SourceC) && this.entrypoints.add(link.getDestinationC()) )
-						epHasChanged = true;
+					for ( IccLink link : iccLinks ) {
+						SootClass SourceC = link.getSourceC();
+						//若当前entrypoints中存在该IccLink的起点，则将终点也加入
+						//若终点是新加入的，则说明这一轮遍历epHasChanged
+						if ( this.entrypoints.contains(SourceC) && this.entrypoints.add(link.getDestinationC()) )
+							epHasChanged = true;
+					}
+
 				}
-
 			}
+			config.setTargetClass("");
 		}
+		
 		
 
 		MultiRunResultAggregator resultAggregator = new MultiRunResultAggregator();
@@ -1656,6 +1664,8 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 				perfData.setTotalRuntimeSeconds((int) Math.round((System.nanoTime() - beforeEntryPoint) / 1E9));
 			}
 		}
+
+
 
 		// We don't need the computed callbacks anymore
 		this.callbackMethods.clear();
@@ -1792,6 +1802,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		MultiMap<SootClass, SootMethod> callbackMethodSigs = new HashMultiMap<>();
 		if (component == null) {
 			// Get all callbacks for all components
+			//+++
 			for (SootClass sc : this.callbackMethods.keySet()) {
 				Set<AndroidCallbackDefinition> callbackDefs = this.callbackMethods.get(sc);
 				if (callbackDefs != null)
@@ -1971,6 +1982,14 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		this.taintPropagationHandler = taintPropagationHandler;
 	}
 
+	public MultiMap<SootClass, AndroidCallbackDefinition> getCallbackMethods() {
+        return this.callbackMethods;
+    }
+
+    public MultiMap<SootClass, SootClass> getFragmentClasses() {
+        return this.fragmentClasses;
+    }
+	
 	/**
 	 * Sets the backwards propagation handler, which will be notified when the alias
 	 * analysis processes an edge. Use this callback if you need a hook into the

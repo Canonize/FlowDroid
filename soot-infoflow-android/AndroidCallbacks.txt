@@ -402,3 +402,4 @@ javax.sql.ConnectionEventListener
 javax.sql.RowSetListener
 javax.sql.StatementEventListener
 javax.xml.transform.ErrorListener
+io.reactivex.functions.Consumer

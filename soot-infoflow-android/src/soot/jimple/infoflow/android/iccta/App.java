@@ -133,6 +133,8 @@ public class App {
 class LoggingPoint {
 	private String callerMethodSignature;
 	private String calleeMethodSignature;
+	//+++
+	private String sourceClass;
 	private int stmtSequence;
 	private Set<Intent> intents = new HashSet<Intent>();
 	int id;
@@ -164,6 +166,14 @@ class LoggingPoint {
 
 	public void setCalleeMethodSignature(String calleeMethodSignature) {
 		this.calleeMethodSignature = calleeMethodSignature;
+	}
+	//+++
+	public String getSourceClass() {
+		return sourceClass;
+	}
+
+	public void setSourceClass(String sourceClass) {
+		this.sourceClass = sourceClass;
 	}
 
 	public int getStmtSequence() {
@@ -224,12 +234,17 @@ class LoggingPoint {
 			return false;
 		if (this.stmtSequence != other.stmtSequence)
 			return false;
+		//+++
+		if (this.sourceClass != other.sourceClass)
+			return false;	
 		if (this.app == other.app) {
 			if (this.id == other.id)
 				return true;
 			else
 				return false;
 		}
+		if(!this.intents.equals(other.intents))
+			return false;
 		return true;
 	}
 

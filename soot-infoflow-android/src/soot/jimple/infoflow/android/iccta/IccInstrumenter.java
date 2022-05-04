@@ -1,9 +1,12 @@
 package soot.jimple.infoflow.android.iccta;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Map;
 import java.util.HashMap;
@@ -19,7 +22,15 @@ import soot.SootClass;
 import soot.SootMethod;
 import soot.Unit;
 import soot.RefType;
+import soot.Value;
+import soot.ValueBox;
+import soot.Type;
+import soot.RefType;
+import soot.VoidType;
+import soot.Modifier;
+import soot.javaToJimple.LocalGenerator;
 import soot.jimple.Jimple;
+import soot.jimple.JimpleBody;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.android.entryPointCreators.components.ComponentEntryPointCollection;
 import soot.jimple.infoflow.entryPointCreators.SimulatedCodeElementTag;
@@ -37,6 +48,9 @@ public class IccInstrumenter implements PreAnalysisHandler {
 	protected final ComponentEntryPointCollection componentToEntryPoint;
 
 	protected IccRedirectionCreator redirectionCreator = null;
+	//+++
+	private final RefType MESSAGE_TYPE = RefType.v("android.os.Message");
+	private static int num = 0;
 
 	protected final SootMethod smMessengerSend;
 	protected final Set<SootMethod> processedMethods = new HashSet<>();
@@ -140,6 +154,7 @@ public class IccInstrumenter implements PreAnalysisHandler {
 						if(stmt.containsInvokeExpr() && stmt.getInvokeExpr().getMethodRef().getSignature().contains("android.os.Handler")) {
 							//Soot has a access$XXX method that returns private fields in outer class
 							if(stmt.getInvokeExpr().getMethodRef().getName().contains("access")) {
+								//System.out.println("Syntheic: "+stmt.toString());
 								Body b = stmt.getInvokeExpr().getMethod().retrieveActiveBody();
 								for (Iterator<Unit> u = b.getUnits().iterator(); u.hasNext();) {
 									Stmt s = (Stmt) u.next();
@@ -148,6 +163,7 @@ public class IccInstrumenter implements PreAnalysisHandler {
 									{
 										if(!stmt.getDefBoxes().isEmpty())
 											handlerClass.put(sootClass.getName() + ":" + stmt.getDefBoxes().get(0).getValue(),s.getFieldRef().getField().getSignature());
+										//System.out.println("++"+handlerClass.toString());
 									}
 								}
 							}
@@ -161,6 +177,8 @@ public class IccInstrumenter implements PreAnalysisHandler {
 
 								
 		}
+		//System.out.println(" @@ "+handlerClass.toString());
+		//System.out.println(" @@ "+handlerInner.toString());
 		//instrument the outerclass
 		for(String sc : handlerClass.keySet())
 			if(sc!=null)
@@ -172,6 +190,7 @@ public class IccInstrumenter implements PreAnalysisHandler {
 		
 		if(sc == null || handlerClass.isEmpty() || handlerInner.isEmpty())
 			return;
+		//System.out.println("--0: "+ sc);
 		SootClass sootClass = Scene.v().getSootClass(sc);
 		List<SootMethod> methodCopyList = new ArrayList<>(sootClass.getMethods());
 		for (SootMethod sootMethod : methodCopyList) {
@@ -202,6 +221,7 @@ public class IccInstrumenter implements PreAnalysisHandler {
 									callHMU.addTag(SimulatedCodeElementTag.TAG);
 									body.getUnits().insertAfter(callHMU, stmt);
 									instrumentedUnits.put(body, callHMU);
+									//System.out.println("--4: "+callHMU.toString());
 									break;
 								}			
 							}

@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import soot.Body;
 import soot.Scene;
+import soot.SootClass;
 import soot.SootMethod;
 import soot.Unit;
 import soot.jimple.Stmt;
@@ -64,7 +65,10 @@ public class Ic3Provider implements IccLinkProvider {
 
 					SootMethod fromSM = Scene.v().grabMethod(intent.getLoggingPoint().getCallerMethodSignature());
 					Stmt fromU = linkWithTarget(fromSM, intent.getLoggingPoint().getStmtSequence());
-					IccLink iccLink = new IccLink(fromSM, fromU, Scene.v().getSootClassUnsafe(targetComp.getName()));
+					//+++
+					SootClass sourceC = Scene.v().getSootClassUnsafe(intent.getLoggingPoint().getSourceClass());
+					
+					IccLink iccLink = new IccLink(fromSM, fromU, Scene.v().getSootClassUnsafe(targetComp.getName()), sourceC);
 					iccLink.setExit_kind(targetComp.getKind().name());
 
 					iccLinks.add(iccLink);
@@ -83,7 +87,10 @@ public class Ic3Provider implements IccLinkProvider {
 
 				if (fromSM != null) {
 					Stmt fromU = linkWithTarget(fromSM, intent.getLoggingPoint().getStmtSequence());
-					IccLink iccLink = new IccLink(fromSM, fromU, Scene.v().getSootClassUnsafe(targetCompName));
+					//+++
+					SootClass sourceC = Scene.v().getSootClassUnsafe(intent.getLoggingPoint().getSourceClass());
+					
+					IccLink iccLink = new IccLink(fromSM, fromU, Scene.v().getSootClassUnsafe(targetCompName), sourceC);
 					//+++++
 					// System.out.println(iccLink.toString()+"\n\n");
 

@@ -23,6 +23,8 @@ import soot.SootField;
 import soot.SootMethod;
 import soot.Type;
 import soot.Unit;
+import soot.javaToJimple.LocalGenerator;
+//+++
 import soot.UnitPatchingChain;
 import soot.jimple.IdentityStmt;
 import soot.jimple.InvokeExpr;

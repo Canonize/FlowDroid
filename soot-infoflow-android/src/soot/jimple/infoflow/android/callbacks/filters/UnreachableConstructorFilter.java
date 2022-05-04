@@ -67,6 +67,7 @@ public class UnreachableConstructorFilter extends AbstractCallbackFilter {
 		return true;
 	}
 
+	
 	@Override
 	public void reset() {
 		// nothing to do here

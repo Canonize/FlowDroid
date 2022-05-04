@@ -73,6 +73,7 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 			this.targetAPKFile = targetAPKFile;
 		}
 
+
 		/**
 		 * Gets the directory in which the Android platform JARs are located
 		 * 
@@ -313,7 +314,7 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		private boolean enableCallbacks = true;
 		private CallbackAnalyzer callbackAnalyzer = CallbackAnalyzer.Default;
 		private boolean filterThreadCallbacks = true;
-		private int maxCallbacksPerComponent = 100;
+		private int maxCallbacksPerComponent = -1;
 		private int callbackAnalysisTimeout = 0;
 		private int maxCallbackAnalysisDepth = -1;
 		private boolean serializeCallbacks = false;
@@ -700,6 +701,8 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 	private boolean mergeDexFiles = false;
 	private static boolean createActivityEntryMethods = true;
 
+	private String targetClass = "";
+
 	public InfoflowAndroidConfiguration() {
 		// We need to adapt some of the defaults. Most people don't care about
 		// this stuff, but want a faster analysis.
@@ -878,4 +881,25 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		return true;
 	}
 
+		/**
+		 * Gets the target Class on which the data flow analysis shall be conducted
+		 * 
+		 * @return The target Class on which the data flow analysis shall be
+		 *         conducted
+		 */
+		public String getTargetClass() {
+			return targetClass;
+		}
+
+		/**
+		 * Sets the target Class on which the data flow analysis shall be conducted
+		 * 
+		 * @param targetAPKFile The target Class on which the data flow analysis
+		 *                      shall be conducted
+		 */
+		public void setTargetClass(String targetClass) {
+			this.targetClass = targetClass;
+		}
+
+	
 }
