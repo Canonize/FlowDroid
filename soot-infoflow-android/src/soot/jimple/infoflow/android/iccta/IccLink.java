@@ -10,15 +10,17 @@ public class IccLink {
 	protected final Unit fromU;
 	protected final SootClass destinationC;
 	//+++
-	protected final SootClass sourceC;
+	protected final SootMethod contextM;
+	protected final Unit contextU;
 	protected String exit_kind;
 
-	public IccLink(SootMethod fromSm, Unit fromU, SootClass destinationC, SootClass sourceC) {
+	public IccLink(SootMethod fromSm, Unit fromU, SootClass destinationC, SootMethod contextM, Unit contextU) {
 		this.fromSM = fromSm;
 		this.fromU = fromU;
 		this.destinationC = destinationC;
 		//+++
-		this.sourceC = sourceC;
+		this.contextM = contextM;
+		this.contextU = contextU;
 	}
 
 	@Override
@@ -48,8 +50,12 @@ public class IccLink {
 	}
 
 	//+++
-	public SootClass getSourceC() {
-		return sourceC;
+	public SootMethod getcontextM() {
+		return contextM;
+	}
+
+	public Unit getcontextU() {
+		return contextU;
 	}
 
 	@Override
@@ -58,7 +64,8 @@ public class IccLink {
 		int result = 1;
 		result = prime * result + ((destinationC == null) ? 0 : destinationC.hashCode());
 		//+++
-		result = prime * result + ((sourceC == null) ? 0 : sourceC.hashCode());
+		result = prime * result + ((contextM == null) ? 0 : contextM.hashCode());
+		result = prime * result + ((contextU == null) ? 0 : contextU.hashCode());
 		result = prime * result + ((exit_kind == null) ? 0 : exit_kind.hashCode());
 		result = prime * result + ((fromSM == null) ? 0 : fromSM.hashCode());
 		result = prime * result + ((fromU == null) ? 0 : fromU.hashCode());
@@ -80,10 +87,16 @@ public class IccLink {
 		} else if (!destinationC.equals(other.destinationC))
 			return false;
 		//+++
-		if (sourceC == null) {
-			if (other.sourceC != null)
+		if (contextM == null) {
+			if (other.contextM != null)
 				return false;
-		} else if (!sourceC.equals(other.sourceC))
+		} else if (!contextM.equals(other.contextM))
+			return false;
+			
+		if (contextU == null) {
+			if (other.contextU != null)
+				return false;
+		} else if (!contextU.equals(other.contextU))
 			return false;	
 
 		if (exit_kind == null) {

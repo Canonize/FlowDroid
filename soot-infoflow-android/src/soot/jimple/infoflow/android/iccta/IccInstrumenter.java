@@ -28,7 +28,7 @@ import soot.Type;
 import soot.RefType;
 import soot.VoidType;
 import soot.Modifier;
-import soot.javaToJimple.LocalGenerator;
+import soot.LocalGenerator;
 import soot.jimple.Jimple;
 import soot.jimple.JimpleBody;
 import soot.jimple.Stmt;

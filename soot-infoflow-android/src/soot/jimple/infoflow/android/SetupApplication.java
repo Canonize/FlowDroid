@@ -1539,7 +1539,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 					epHasChanged = false;
 
 					for ( IccLink link : iccLinks ) {
-						SootClass SourceC = link.getSourceC();
+						SootClass SourceC = link.getcontextM().getDeclaringClass();
 						//若当前entrypoints中存在该IccLink的起点，则将终点也加入
 						//若终点是新加入的，则说明这一轮遍历epHasChanged
 						if ( this.entrypoints.contains(SourceC) && this.entrypoints.add(link.getDestinationC()) )

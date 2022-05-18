@@ -66,9 +66,11 @@ public class Ic3Provider implements IccLinkProvider {
 					SootMethod fromSM = Scene.v().grabMethod(intent.getLoggingPoint().getCallerMethodSignature());
 					Stmt fromU = linkWithTarget(fromSM, intent.getLoggingPoint().getStmtSequence());
 					//+++
-					SootClass sourceC = Scene.v().getSootClassUnsafe(intent.getLoggingPoint().getSourceClass());
+					SootMethod contextM = Scene.v().grabMethod(intent.getLoggingPoint().getSourceClass().split("#")[0]);
+
+					Stmt contextU = linkWithTarget(contextM, Integer.parseInt(intent.getLoggingPoint().getSourceClass().split("#")[1]));
 					
-					IccLink iccLink = new IccLink(fromSM, fromU, Scene.v().getSootClassUnsafe(targetComp.getName()), sourceC);
+					IccLink iccLink = new IccLink(fromSM, fromU, Scene.v().getSootClassUnsafe(targetComp.getName()), contextM, contextU);
 					iccLink.setExit_kind(targetComp.getKind().name());
 
 					iccLinks.add(iccLink);
@@ -88,9 +90,11 @@ public class Ic3Provider implements IccLinkProvider {
 				if (fromSM != null) {
 					Stmt fromU = linkWithTarget(fromSM, intent.getLoggingPoint().getStmtSequence());
 					//+++
-					SootClass sourceC = Scene.v().getSootClassUnsafe(intent.getLoggingPoint().getSourceClass());
+					SootMethod contextM = Scene.v().grabMethod(intent.getLoggingPoint().getSourceClass().split("#")[0]);
+
+					Stmt contextU = linkWithTarget(contextM, Integer.parseInt(intent.getLoggingPoint().getSourceClass().split("#")[1]));
 					
-					IccLink iccLink = new IccLink(fromSM, fromU, Scene.v().getSootClassUnsafe(targetCompName), sourceC);
+					IccLink iccLink = new IccLink(fromSM, fromU, Scene.v().getSootClassUnsafe(targetCompName), contextM, contextU);
 					//+++++
 					// System.out.println(iccLink.toString()+"\n\n");
 

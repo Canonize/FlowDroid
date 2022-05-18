@@ -468,16 +468,31 @@ public class IccRedirectionCreator {
 			return;
 		}
 
+
+		final Body body = link.getcontextM().retrieveActiveBody();
+		final PatchingChain<Unit> units = body.getUnits();
+		final LocalGenerator lg = Scene.v().createLocalGenerator(body);
+
+		Unit fromU = link.getFromU();
+		
+		if(!units.contains(link.getFromU()) && units.contains(link.getcontextU())) {
+			Local simulLocal = lg.generateLocal(INTENT_TYPE);
+			args.clear();
+			args.add((Value)simulLocal);
+			fromU = link.getcontextU();
+			System.out.println("%%: " + link.getcontextM().getName() + " ： " + fromU + " ： " + units.getPredOf(fromU));
+	
+		}
+
 		Stmt redirectCallU = Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(redirectMethod.makeRef(), args));
 
-		final Body body = link.getFromSM().retrieveActiveBody();
-		final PatchingChain<Unit> units = body.getUnits();
 
 		copyTags(link.getFromU(), redirectCallU);
 		redirectCallU.addTag(SimulatedCodeElementTag.TAG);
 		//+++++ 异常处理
 		try {
-			units.insertAfter(redirectCallU, link.getFromU());
+			units.insertAfter(redirectCallU, fromU);
+			System.out.println("++: " + link.getcontextM().getName() + " ： " + fromU + " ： " + units.getSuccOf(fromU));
 		} catch (Exception e) {
 			System.out.println("Insertion point not found in chain");
 			System.out.println("----------------------------------");
