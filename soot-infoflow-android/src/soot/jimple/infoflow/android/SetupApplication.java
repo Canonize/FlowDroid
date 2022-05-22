@@ -1520,9 +1520,10 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		}
 		//+++++
 		//在这里改entrypoint
-		if(!config.getTargetClass().isEmpty()) {
+		if(!config.getTargetClasses().isEmpty()) {
 			this.entrypoints = new HashSet<>();
-			this.entrypoints.add(Scene.v().getSootClassUnsafe(config.getTargetClass()));
+			for(String targetClass : config.getTargetClasses())
+				this.entrypoints.add(Scene.v().getSootClassUnsafe(targetClass));
 
 			//+++++
 			//如果以有ICC状态运行Flowdroid
@@ -1548,7 +1549,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 
 				}
 			}
-			config.setTargetClass("");
+			config.setTargetClasses(null);
 		}
 		
 		

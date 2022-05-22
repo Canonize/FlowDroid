@@ -1,6 +1,8 @@
 package soot.jimple.infoflow.android;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -701,7 +703,7 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 	private boolean mergeDexFiles = false;
 	private static boolean createActivityEntryMethods = true;
 
-	private String targetClass = "";
+	private List<String> targetClasses = new ArrayList<String>();
 
 	public InfoflowAndroidConfiguration() {
 		// We need to adapt some of the defaults. Most people don't care about
@@ -887,8 +889,8 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		 * @return The target Class on which the data flow analysis shall be
 		 *         conducted
 		 */
-		public String getTargetClass() {
-			return targetClass;
+		public List<String> getTargetClasses() {
+			return targetClasses;
 		}
 
 		/**
@@ -897,8 +899,8 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		 * @param targetAPKFile The target Class on which the data flow analysis
 		 *                      shall be conducted
 		 */
-		public void setTargetClass(String targetClass) {
-			this.targetClass = targetClass;
+		public void setTargetClasses(List<String> targetClasses) {
+			this.targetClasses = targetClasses;
 		}
 
 	
