@@ -120,6 +120,10 @@ public class Ic3Provider implements IccLinkProvider {
 		for (Iterator<Unit> iter = body.getUnits().snapshotIterator(); iter.hasNext();) {
 			Stmt stmt = (Stmt) iter.next();
 
+			if(stmt.toString().contains("redirector")){
+				continue;
+			}
+			
 			if (i == stmtIdx) {
 			//+++++
 			// System.out.println(stmtIdx+ " : "+ stmt+"\n");

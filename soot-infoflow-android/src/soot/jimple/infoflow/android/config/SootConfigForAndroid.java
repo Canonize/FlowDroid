@@ -35,7 +35,7 @@ public class SootConfigForAndroid implements IInfoflowConfig {
 		// calls to Android SDK stubs. We need a proper test case for the layout
 		// file issue and then see how to deal with it.
 		excludeList.add("android.*");
-		excludeList.add("androidx.*");
+		//excludeList.add("androidx.*");
 
 		excludeList.add("org.apache.*");
 		excludeList.add("org.eclipse.*");

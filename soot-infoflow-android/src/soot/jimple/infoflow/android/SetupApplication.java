@@ -1552,7 +1552,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 			config.setTargetClasses(null);
 		}
 		
-		
+		Scene.v().addBasicClass("androidx.fragment.app.FragmentActivity",SootClass.BODIES);
 
 		MultiRunResultAggregator resultAggregator = new MultiRunResultAggregator();
 
