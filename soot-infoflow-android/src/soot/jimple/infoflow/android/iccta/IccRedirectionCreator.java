@@ -181,6 +181,12 @@ public class IccRedirectionCreator {
 			}
 
 			if (redirectMethod == null) {
+				int i = 0;
+				Body body = link.getFromSM().retrieveActiveBody();
+				for (Iterator<Unit> iter = body.getUnits().snapshotIterator(); iter.hasNext();i++) {
+				Stmt s = (Stmt) iter.next();
+				System.out.println(i + " : "+ s+"\n");
+				}
 				throw new RuntimeException("Wrong IccLink [" + link.toString() + "]");
 			}
 
@@ -474,7 +480,11 @@ public class IccRedirectionCreator {
 		final LocalGenerator lg = Scene.v().createLocalGenerator(body);
 
 		Unit fromU = link.getFromU();
-		
+		// int i = 0;
+		// for (Iterator<Unit> iter = body.getUnits().snapshotIterator(); iter.hasNext();i++) {
+		// 	Stmt stmt = (Stmt) iter.next();
+		// 	System.out.println(i + " : "+ stmt+"\n");
+		// }
 		if(!units.contains(link.getFromU()) && units.contains(link.getcontextU())) {
 			Local simulLocal = lg.generateLocal(INTENT_TYPE);
 			args.clear();

@@ -15,6 +15,7 @@ import soot.SootMethod;
 import soot.Unit;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.android.iccta.Ic3Data.Application.Component;
+import soot.jimple.infoflow.entryPointCreators.SimulatedCodeElementTag;
 
 public class Ic3Provider implements IccLinkProvider {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -120,7 +121,7 @@ public class Ic3Provider implements IccLinkProvider {
 		for (Iterator<Unit> iter = body.getUnits().snapshotIterator(); iter.hasNext();) {
 			Stmt stmt = (Stmt) iter.next();
 
-			if(stmt.toString().contains("redirector")){
+			if(stmt.hasTag(SimulatedCodeElementTag.TAG_NAME)){
 				continue;
 			}
 			

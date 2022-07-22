@@ -1541,6 +1541,8 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 
 					for ( IccLink link : iccLinks ) {
 						SootClass SourceC = link.getcontextM().getDeclaringClass();
+						if(SourceC.isInnerClass())
+							SourceC = SourceC.getOuterClass();
 						//若当前entrypoints中存在该IccLink的起点，则将终点也加入
 						//若终点是新加入的，则说明这一轮遍历epHasChanged
 						if ( this.entrypoints.contains(SourceC) && this.entrypoints.add(link.getDestinationC()) )
@@ -1552,7 +1554,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 			config.setTargetClasses(null);
 		}
 		
-		Scene.v().addBasicClass("androidx.fragment.app.FragmentActivity",SootClass.BODIES);
+		//Scene.v().addBasicClass("androidx.fragment.app.FragmentActivity",SootClass.BODIES);
 
 		MultiRunResultAggregator resultAggregator = new MultiRunResultAggregator();
 
